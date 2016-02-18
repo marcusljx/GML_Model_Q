@@ -1,5 +1,7 @@
 package xjlm.gml_model_Q;
 
+import org.dom4j.DocumentException;
+
 public class Main {
     static gml_Parser gmlP = new gml_Parser();
 
@@ -7,8 +9,10 @@ public class Main {
         /*todo:
             - Merge >1x of <bldg:consistsOfBuildingPart> into topmost instance
             - Overwrite all (use all factors up until)
-
          */
+
+        // Find Minor Tags in all non-first MajorTag Branches
+
     }
 
     public static void mergeSurfaces() {
@@ -16,7 +20,7 @@ public class Main {
         mergeMajorTag_keepMinorTags("bldg:consistsOfBuildingPart", "bldg:boundedBy");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DocumentException {
         gmlP.readGML("samples/qn1_modela.gml");
 //        gmlP.readGML("samples/sampleNote.xml");
 

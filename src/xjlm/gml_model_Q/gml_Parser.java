@@ -1,80 +1,77 @@
 package xjlm.gml_model_Q;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import org.dom4j.*;
+import org.dom4j.io.SAXReader;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by marcusljx on 18/02/16.
  */
 public class gml_Parser {
-    private static Document root;
+    private static Document document;
+    private static Element root;
 
-    public void readGML(String filepath) {
-        try {
-            // Create DocumentBuilder
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setValidating(false);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-
-            // Parse GML file
-            root = builder.parse(new FileInputStream(new File(filepath)));
-
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }
+    public void readGML(String filepath) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        document = reader.read(new File(filepath));
+        root = document.getRootElement();
     }
 
     public void debug_print_GMLTree() {
         debug_print_GMLTree(root, 0);
     }
 
-    private void debug_print_GMLTree(Node node, int level) {
-        String line = "";
-        String spacing = new String( new char[level]).replace("\0", "  ");  // add two spaces for each level
+    private String getAttributeString(Element node) {     // returns a string of the nodes attributes and their values
+        String output = "";
 
-        // Evaluate Name
-        String nName = node.getNodeName();
-        boolean isTag = (nName.substring(0,1).equals("#")); // T/F
+        List<Attribute> attr = node.attributes();
+        for(Attribute A : attr) {
+            output += " [";
 
-        // Evaluate Value
-        String nValue = node.getNodeValue();
-        boolean hasValue = ( (nValue != null) && (!nValue.matches("^\\s*$")) ); // T/F
-
-        line += (isTag && !hasValue) ? "" : spacing;
-
-        // Evaluate Children
-        NodeList cList = node.getChildNodes();
-        boolean isParent = (cList.getLength() > 0); // T/F
-
-        // Formatting
-        if(isTag && hasValue) {
-            line += "(" + nName + " = " + nValue + ")";
-        } else if (!isTag) {
-            line += nName;
-        }
-
-        System.out.print(line);
-
-        if(isParent) {
-            System.out.println(" {");
-
-            //recurse through children
-            for(int i=0; i<cList.getLength(); i++) {
-                Node child = cList.item(i);
-                debug_print_GMLTree(child, level + 1);
+            // Add namespace prefix if it exists
+            if(!A.getNamespacePrefix().equals("")) {
+                output += A.getNamespacePrefix() + ":";
             }
 
-            System.out.println("\n" + spacing + "}");
+            output += A.getName() + " = \"" + A.getValue() + "\"]";
         }
+        return output;
     }
 
 
+    private void debug_print_GMLTree(Element node, int level) {
+        String indent = new String(new char[level]).replace("\0", "  ");
+        String currentLine = indent + node.getName();
+
+        // Check Kids
+        List<Element> children = node.elements();
+        boolean hasKids = (children.size() > 0);
+
+        // Check Attributes
+        currentLine += getAttributeString(node);
+
+        // Fill in Data (text data)
+        if(node.isTextOnly()) {
+            currentLine += " (" + node.getText() + ")";
+        }
+
+        // Print full line
+        System.out.print( currentLine );
+
+        // Print block
+        if(hasKids) {
+            System.out.println(" {");
+
+            // Recurse over children
+            for(Element c : children) {
+                debug_print_GMLTree(c, level + 1);
+            }
+
+            System.out.println(indent + "}");
+        } else {
+            System.out.println();
+        }
+    }
 }
