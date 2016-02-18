@@ -4,6 +4,7 @@ import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,10 +18,6 @@ public class gml_Parser {
         SAXReader reader = new SAXReader();
         document = reader.read(new File(filepath));
         root = document.getRootElement();
-    }
-
-    public void debug_print_GMLTree() {
-        debug_print_GMLTree(root, 0);
     }
 
     private String getAttributeString(Element node) {     // returns a string of the nodes attributes and their values
@@ -39,7 +36,6 @@ public class gml_Parser {
         }
         return output;
     }
-
 
     private void debug_print_GMLTree(Element node, int level) {
         String indent = new String(new char[level]).replace("\0", "  ");
@@ -75,11 +71,50 @@ public class gml_Parser {
         }
     }
 
+    //=================== GETTERS
     public Element getRoot() {
         return root;
     }
 
     public Document getDocument() {
         return document;
+    }
+
+    public ArrayList<String> getListOfPathsEndingWith(Element node, String name) {   // local recursion stops at first found
+        ArrayList<String> result = new ArrayList<>();
+
+        String prefix = node.getNamespacePrefix();
+        String nName;
+        if(!prefix.equals("")) {
+            nName = prefix + ":" + node.getName();
+        } else {
+            nName = node.getName();
+        }
+
+        if(nName.equals(name)) {
+            result.add("/"+ nName);
+        } else {
+            // Traverse Children recursively. Append their results together;
+            List<Element> children = node.elements();
+            for(Element c : children) {
+                result.addAll(getListOfPathsEndingWith(c, name));
+            }
+
+            // Add own path in front of all results
+            for(int i=0; i<result.size(); i++) {
+                result.set(i, "/" + nName + result.get(i));
+            }
+        }
+
+        return result;
+    }
+
+    //==================== OVERRIDES
+    public void debug_print_GMLTree() {
+        debug_print_GMLTree(root, 0);
+    }
+
+    public ArrayList<String> getListOfPathsEndingWith(String name) {
+        return getListOfPathsEndingWith(root, name);
     }
 }
