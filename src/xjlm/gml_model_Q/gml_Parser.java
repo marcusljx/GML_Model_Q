@@ -74,4 +74,12 @@ public class gml_Parser {
             System.out.println();
         }
     }
+
+    public Element getRoot() {
+        return root;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
 }
