@@ -15,10 +15,6 @@ public class DOM_Algorithms {
     //===============================================
     //=================== STRING ====================
     //===============================================
-    public static String getFullNameOfNode(Element node) {
-        return (node.getNamespacePrefix().equals("")) ? node.getName() : node.getNamespacePrefix() + ":" + node.getName();
-    }
-
     public String trimNamespaces(String S) {
         return S.replaceAll("([A-Za-z0-9]*:)", "");
     }
@@ -89,7 +85,7 @@ public class DOM_Algorithms {
 
     public static ArrayList<Element> getNodesWithName(Element node, String name) {
         ArrayList<Element> result = new ArrayList<>();
-        if(getFullNameOfNode(node).equals(name)) {
+        if(node.getQualifiedName().equals(name)) {
             result.add(node);
         } else {
             List<Element> children = node.elements();
@@ -114,7 +110,7 @@ public class DOM_Algorithms {
         Element MajorParent = parentCandidates.get(A);
 
         // Find
-        System.out.println(getFullNameOfNode(MajorParent));
+        System.out.println(MajorParent.getQualifiedName());
 //        MajorParent.selectNodes()
 
         ArrayList<Element> result = new ArrayList<>();
