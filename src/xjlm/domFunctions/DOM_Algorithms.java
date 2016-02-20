@@ -67,14 +67,20 @@ public class DOM_Algorithms {
                 if(e.isRootElement()) {
                     visited.add(e);
                 } else {
-                    if (!visited.contains(e)) {
+                    if(!visited.contains(e)) {
                         visited.add(e);
-                        result.set(i, e.getParent());   // change element to its parent
+                        if(!result.contains(e.getParent())) {
+                            result.set(i, e.getParent());   // change element to its parent
+                        } else {
+                            result.remove(i);
+                            i--;
+                        }
                     } else {
                         result.remove(i);   // remove element if it has already been visited.
                         i--;
                     }
                 }
+                if(result.size() == 1) break;
             }
         }
 
