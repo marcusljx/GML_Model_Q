@@ -1,8 +1,9 @@
 package xjlm.gml_model_Q;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 import xjlm.domFunctions.DOM_Algorithms;
 
 import java.io.IOException;
@@ -93,7 +94,34 @@ public class Main {
     //===============================================
     //================ Q2 FUNCTIONS =================
     //===============================================
-    public static void deriveGroundSurfaceFromWallSurfaces(gml_Parser parsedDoc, String familyTagName) {
+    // if fullString contains 5 sets of XYZ (dimensions==3) values (ie. 15 values), and if setIndex==1, extract the 2nd set of XYZ values (ie. 4th,5th,6th values)
+    public static String extractCoordinateString(String fullString, int setIndex, int dimensions) throws ArrayIndexOutOfBoundsException {
+        String result = "";
+        String[] values = fullString.split(" +");
+
+        result += values[setIndex*dimensions] + " ";
+        result += values[(setIndex*dimensions)+1] + " ";
+        result += values[(setIndex*dimensions)+2];
+
+        return result;
+    }
+
+    public static void generateGroundSurfaceTree(Element parent, String id, int srsDimension, String coordinateData) {
+        parent  .addElement("bldg:boundedBy")
+                .addElement("bldg:GroundSurface")
+                .addElement("bldg:lod2MultiSurface")
+                .addElement("gml:MultiSurface")
+                .addElement("gml:surfaceMember")
+                .addElement("gml:Polygon")
+                    .addAttribute("gml:id", id)        // Add id attribute to Polygon tag
+                .addElement("gml:exterior")
+                .addElement("gml:LinearRing")
+                .addElement("gml:posList")
+                    .addAttribute("srsDimension", String.valueOf(srsDimension)) // Add srsDimension attribute and text data to posList
+                    .addText(coordinateData);
+    }
+
+    public static void deriveGroundSurfaceFromWallSurfaces(gml_Parser parsedDoc, String familyTagName, String surfaceID) throws ArrayIndexOutOfBoundsException {
         ArrayList<Element> Surfaces = parsedDoc.getNodesWithName(familyTagName);
         ArrayList<Element> wallSurfaces = new ArrayList<>();
 
@@ -105,12 +133,33 @@ public class Main {
             }
         }
 
-        // For Each WallSurface
+        int srsDimensions = 3;  // default
+        // For Each WallSurface, take the 2nd set of XYZ coordinates, add it to GroundSurfaceCoordinates
+        String groundSurfacePosListText = "";
+        for(int i=0; i<=wallSurfaces.size(); i++) { // using <= because have to loop back to get first wallSurface again
+            Element W = wallSurfaces.get( i % wallSurfaces.size() );    // cyclic index
+
+            Element posListNode = DOM_Algorithms.getNodesWithName(W, "gml:posList").get(0);
+            String posList = posListNode.getText();
+            srsDimensions = Integer.parseInt(posListNode.attribute("srsDimension").getValue());
+
+            groundSurfacePosListText += extractCoordinateString(posList, 1, srsDimensions) + " ";   // extract the 2nd set of XYZ values
+        }
+        groundSurfacePosListText = groundSurfacePosListText.trim();
+
+        // Add Ground Surface to the parent of the wall surfaces
+        Element parent = wallSurfaces.get(0).getParent();
+        generateGroundSurfaceTree(parent, surfaceID, srsDimensions, groundSurfacePosListText);
+
+        // Add ground surface id to composite surface
+        Element compositeSurface = parsedDoc.getNodesWithName("gml:CompositeSurface").get(0);
+        compositeSurface.addElement("gml:surfaceMember")
+                .addAttribute("xlink:href", "#"+surfaceID);
     }
 
     public static void Qn2() {
         String FamilyTagName = "bldg:boundedBy";
-        deriveGroundSurfaceFromWallSurfaces(qn2_modelA, FamilyTagName);
+        deriveGroundSurfaceFromWallSurfaces(qn2_modelA, FamilyTagName, "gs_BM_p32767_0");
     }
 
     //===============================================
@@ -132,6 +181,7 @@ public class Main {
         } else if(QuestionNumber.equals("Q2")) {
             qn2_modelA.readGML("samples/qn2_modela.gml");
             Qn2();
+            qn2_modelA.writeXMLtoFile(outputFilePath);
 
         } else {
             System.err.println("ERROR: Question Number should match one of the following: Q1 | Q2");
