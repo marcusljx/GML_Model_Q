@@ -1,17 +1,15 @@
 package xjlm.gml_model_Q;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import xjlm.domFunctions.DOM_Algorithms;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    static gml_Parser gmlP = new gml_Parser();
+    static gml_Parser qn1_modelA = new gml_Parser();
 
     //==== default stuff
     public static <T> void print(ArrayList<T> arr)  {
@@ -31,7 +29,7 @@ public class Main {
 
     public static void mergeMajorTag_keepMinorTags(String MajorTagName, String MinorTagName) {
         // Find all Minor Tags in all non-first MajorTag Branches
-        ArrayList<Element> MajorTagNodes = gmlP.getNodesWithName(MajorTagName);
+        ArrayList<Element> MajorTagNodes = qn1_modelA.getNodesWithName(MajorTagName);
         Element MajorNodeToKeep = MajorTagNodes.get(0);
 
         //=============== SEGMENT: ADDING SURFACE IDs TO 1ST COMPOSITE SURFACE
@@ -82,24 +80,31 @@ public class Main {
         }
     }
 
-    public static void mergeSurfaces() {
+    public static void Qn1() {
         String MajorTagName = "bldg:consistsOfBuildingPart";
         String MinorTagName = "bldg:boundedBy";
 
-
-
-        // Combine Outer Blocks from "bldg:consistsOfBuildingPart", keep "bldg:boundedBy" nodes unique.
+        // Combine Tags from MajorTagName up until MinorTagName. Keep MinorTagName nodes unique.
         mergeMajorTag_keepMinorTags(MajorTagName, MinorTagName);
-
-        // Add surface id to composite surface
-
-        // Remove secondary Major Tags
     }
 
     public static void main(String[] args) throws DocumentException, IOException {
-        gmlP.readGML("samples/qn1_modela.gml");
-        mergeSurfaces();
+        if(args.length != 2) {
+            System.err.println("Usage: GML_Model_Q.java <Q1 | Q2> <outputFilePath>");
+            System.exit(-1);
+        }
+        String QuestionNumber = args[0];
+        String outputFilePath = args[1];
 
-        gmlP.writeXMLtoFile("out/testOutput.gml");
+        if(QuestionNumber.equals("Q1")) {
+            qn1_modelA.readGML("samples/qn1_modela.gml");
+            Qn1();
+            qn1_modelA.writeXMLtoFile(outputFilePath);
+        } else if(QuestionNumber.equals("Q2")) {
+            // Todo: Qn2;
+        } else {
+            System.err.println("ERROR: Question Number should match one of the following: Q1 | Q2");
+            System.exit(-1);
+        }
     }
 }
