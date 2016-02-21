@@ -1,5 +1,6 @@
 package xjlm.gml_model_Q;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import xjlm.domFunctions.DOM_Algorithms;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class Main {
     static gml_Parser qn1_modelA = new gml_Parser();
+    static gml_Parser qn2_modelA = new gml_Parser();
 
     //==== default stuff
     public static <T> void print(ArrayList<T> arr)  {
@@ -24,12 +26,12 @@ public class Main {
         }
     }
 
-
-
-
-    public static void mergeMajorTag_keepMinorTags(String MajorTagName, String MinorTagName) {
+    //===============================================
+    //================ Q1 FUNCTIONS =================
+    //===============================================
+    public static void mergeMajorTag_keepMinorTags(gml_Parser parsedDoc, String MajorTagName, String MinorTagName) {
         // Find all Minor Tags in all non-first MajorTag Branches
-        ArrayList<Element> MajorTagNodes = qn1_modelA.getNodesWithName(MajorTagName);
+        ArrayList<Element> MajorTagNodes = parsedDoc.getNodesWithName(MajorTagName);
         Element MajorNodeToKeep = MajorTagNodes.get(0);
 
         //=============== SEGMENT: ADDING SURFACE IDs TO 1ST COMPOSITE SURFACE
@@ -85,9 +87,35 @@ public class Main {
         String MinorTagName = "bldg:boundedBy";
 
         // Combine Tags from MajorTagName up until MinorTagName. Keep MinorTagName nodes unique.
-        mergeMajorTag_keepMinorTags(MajorTagName, MinorTagName);
+        mergeMajorTag_keepMinorTags(qn1_modelA, MajorTagName, MinorTagName);
     }
 
+    //===============================================
+    //================ Q2 FUNCTIONS =================
+    //===============================================
+    public static void deriveGroundSurfaceFromWallSurfaces(gml_Parser parsedDoc, String familyTagName) {
+        ArrayList<Element> Surfaces = parsedDoc.getNodesWithName(familyTagName);
+        ArrayList<Element> wallSurfaces = new ArrayList<>();
+
+        // Find all WallSurfaces
+        for(Element S : Surfaces) {
+            List<Element> children = S.elements();
+            if(children.get(0).getQualifiedName().equals("bldg:WallSurface")) {
+                wallSurfaces.add(S);
+            }
+        }
+
+        // For Each WallSurface
+    }
+
+    public static void Qn2() {
+        String FamilyTagName = "bldg:boundedBy";
+        deriveGroundSurfaceFromWallSurfaces(qn2_modelA, FamilyTagName);
+    }
+
+    //===============================================
+    //=================== MAIN ======================
+    //===============================================
     public static void main(String[] args) throws DocumentException, IOException {
         if(args.length != 2) {
             System.err.println("Usage: GML_Model_Q.java <Q1 | Q2> <outputFilePath>");
@@ -100,8 +128,11 @@ public class Main {
             qn1_modelA.readGML("samples/qn1_modela.gml");
             Qn1();
             qn1_modelA.writeXMLtoFile(outputFilePath);
+
         } else if(QuestionNumber.equals("Q2")) {
-            // Todo: Qn2;
+            qn2_modelA.readGML("samples/qn2_modela.gml");
+            Qn2();
+
         } else {
             System.err.println("ERROR: Question Number should match one of the following: Q1 | Q2");
             System.exit(-1);
