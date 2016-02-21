@@ -1,10 +1,14 @@
 package xjlm.gml_model_Q;
 
 import org.dom4j.*;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import xjlm.domFunctions.DOM_Algorithms;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +83,13 @@ public class gml_Parser {
 
     public Document getDocument() {
         return document;
+    }
+
+    //==================== OUTPUT
+    public void writeXMLtoFile(String filepath) throws IOException {
+        XMLWriter writer = new XMLWriter( new FileWriter(filepath), OutputFormat.createPrettyPrint() );
+        writer.write(document);
+        writer.close();
     }
 
     //==================== OVERRIDES

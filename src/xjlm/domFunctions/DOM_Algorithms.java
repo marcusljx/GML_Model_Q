@@ -116,4 +116,12 @@ public class DOM_Algorithms {
         ArrayList<Element> result = new ArrayList<>();
         return result;
     }
+
+    //===============================================
+    //================ TREE MODDING =================
+    //===============================================
+
+    public static void insertElementAt(Element node, Element destParent, int index) {   // inserts node among the destParent's children, at index stated
+        destParent.content().add(index, node);
+    }
 }
