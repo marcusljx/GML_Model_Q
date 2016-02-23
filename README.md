@@ -40,6 +40,7 @@ The program determines the coordinates of a `GroundSurface` from the existing co
 The basic concept here is how a surface is "drawn" in CityGML files. A surface is drawn using a sequence of "lines", which has two points (beginning and end). A rectangular surface is thus drawn with 4 lines, which means the `gml:posList` must accommodate 5 sets of coordinates (ie. point1, point2, point3, point4, point1). Failing to include the final "point1" coordinate will mean that the line between point4 and point1 will not be drawn (incomplete surface). The `srsDimension` attribute determines the dimensionality of each coordinate. For example, a rectangular surface with `srsDimenstion=3` will have `(4+1)*3 = 15` values in its `posList`, while a triangular surface with `srsDimension=2` will have `(3+1)*2 = 8` values.
 
 To find the coordinates of a `GroundSurface`, the program:
+
 1. Reads through the `DOM`'s `bldg:boundedBy` tags.
 2. For each `bldg:boundedBy` subtree that has an immediate child node called `bldg:WallSurface`, find its `gml:posList` descendant and extract the data. Add these coordinates to a `ListOfPositions`. Find the `srsDimension` attribute value.
 3. The number of sides of the `GroundSurface`, `N` == number of items in `ListOfPositions`.
