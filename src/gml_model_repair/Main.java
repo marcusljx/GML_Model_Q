@@ -1,10 +1,7 @@
-package xjlm.gml_model_Q;
+package gml_model_repair;
 
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Namespace;
-import org.dom4j.QName;
-import xjlm.domFunctions.DOM_Algorithms;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -166,12 +163,13 @@ public class Main {
     //=================== MAIN ======================
     //===============================================
     public static void main(String[] args) throws DocumentException, IOException {
-        if(args.length != 2) {
-            System.err.println("Usage: GML_Model_Q.java <Q1 | Q2> <outputFilePath>");
+        if(args.length != 3) {
+            System.err.println("Usage: GML_Model_Q.java <Q1 | Q2> <inputFilePath> <outputFilePath>");
             System.exit(-1);
         }
         String QuestionNumber = args[0];
-        String outputFilePath = args[1];
+        String inputFilePath = args[1];
+        String outputFilePath = args[2];
 
         if(QuestionNumber.equals("Q1")) {
             qn1_modelA.readGML("samples/qn1_modela.gml");
@@ -187,5 +185,7 @@ public class Main {
             System.err.println("ERROR: Question Number should match one of the following: Q1 | Q2");
             System.exit(-1);
         }
+
+        System.out.println("Repaired file written to: " + outputFilePath);
     }
 }
