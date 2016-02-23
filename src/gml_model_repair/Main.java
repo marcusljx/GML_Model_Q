@@ -164,7 +164,7 @@ public class Main {
     //===============================================
     public static void main(String[] args) throws DocumentException, IOException {
         if(args.length != 3) {
-            System.err.println("Usage: GML_Model_Q.java <Q1 | Q2> <inputFilePath> <outputFilePath>");
+            System.err.println("Usage: java -cp 'lib/*:.' gml_model_repair.Main <Q1 | Q2> <inputFilePath> <outputFilePath>");
             System.exit(-1);
         }
         String QuestionNumber = args[0];
