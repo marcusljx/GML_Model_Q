@@ -1,5 +1,5 @@
 # GML_Model_Q
-Small functions to repair/modify GML files.
+Small functions to repair/modify GML files. Uses the Dom4J library.
 
 ## How To Use
 Compile the program to Working Directory:
@@ -19,9 +19,9 @@ java -cp 'lib/*:.' gml_model_repair.Main Q1 samples/qn1_modela.gml testOutput.gm
 will perform the repair operation requested in Question 1 on a CityGML file (`samples/qn1_modela.gml`) and write the repaired file to `testOutput.gml`.
 
 ## Methodology 
-### Q1
 The program represents GML files as a tree structure using the Dom4J library. For the following explanations, the terms `tag` and `subtree` are equivalent from a functional point of view. The term `node` refers to a `tag` by itself (ie. without its children). `DOM` refers to the entire GML tree structure as a whole.
 
+### Q1
 The problem represented in Question 1 is a GML file which has two `bldg:consistsOfBuildingPart` subtrees containing different surfaces, all of which are encapsulated within `bldg:boundedBy` tags. The surfaces are to be merged into the top-most `bldg:consistsOfBuildingPart` tag, with each `bldg:boundedBy` subtree remaining unique. The `gml:id` of each added surface is also added to the `gml:CompositeSurface` subtree of the top-most `bldg:consistsOfBuildingPart` subtree, as a `gml:surfaceMember` tag.
 
 To achieve this, the program:
