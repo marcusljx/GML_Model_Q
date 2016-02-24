@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    static gml_Parser qn1_modelA = new gml_Parser();
-    static gml_Parser qn2_modelA = new gml_Parser();
+    static gml_Parser parser = new gml_Parser();
 
     //==== default stuff
     public static <T> void print(ArrayList<T> arr)  {
@@ -85,7 +84,7 @@ public class Main {
         String MinorTagName = "bldg:boundedBy";
 
         // Combine Tags from MajorTagName up until MinorTagName. Keep MinorTagName nodes unique.
-        mergeMajorTag_keepMinorTags(qn1_modelA, MajorTagName, MinorTagName);
+        mergeMajorTag_keepMinorTags(parser, MajorTagName, MinorTagName);
     }
 
     //===============================================
@@ -156,7 +155,15 @@ public class Main {
 
     public static void Qn2() {
         String FamilyTagName = "bldg:boundedBy";
-        deriveGroundSurfaceFromWallSurfaces(qn2_modelA, FamilyTagName, "gs_BM_p32767_0");
+        deriveGroundSurfaceFromWallSurfaces(parser, FamilyTagName, "gs_BM_p32767_0");
+    }
+
+    //===============================================
+    //================ Q2 FUNCTIONS =================
+    //===============================================
+
+    public static void Qn3() {
+        parser.debug_print_GMLTree();
     }
 
     //===============================================
@@ -164,28 +171,34 @@ public class Main {
     //===============================================
     public static void main(String[] args) throws DocumentException, IOException {
         if(args.length != 3) {
-            System.err.println("Usage: java -cp 'lib/*:.' gml_model_repair.Main <Q1 | Q2> <inputFilePath> <outputFilePath>");
+            System.err.println("Usage: java -cp 'lib/*:.' gml_model_repair.Main < Q1 | Q2 | Q3 > <inputFilePath> <outputFilePath>");
             System.exit(-1);
         }
         String QuestionNumber = args[0];
         String inputFilePath = args[1];
         String outputFilePath = args[2];
 
-        if(QuestionNumber.equals("Q1")) {
-            qn1_modelA.readGML("samples/qn1_modela.gml");
-            Qn1();
-            qn1_modelA.writeXMLtoFile(outputFilePath);
+        parser.readGML(inputFilePath);
 
-        } else if(QuestionNumber.equals("Q2")) {
-            qn2_modelA.readGML("samples/qn2_modela.gml");
-            Qn2();
-            qn2_modelA.writeXMLtoFile(outputFilePath);
+        switch(QuestionNumber) {
+            case "Q1":
+                Qn1();
+                break;
 
-        } else {
-            System.err.println("ERROR: Question Number should match one of the following: Q1 | Q2");
-            System.exit(-1);
+            case "Q2":
+                Qn2();
+                break;
+
+            case "Q3":
+                Qn3();
+                break;
+
+            default:
+                System.err.println("ERROR: Question Number should match one of the following: Q1 | Q2");
+                System.exit(-1);
         }
 
+        parser.writeXMLtoFile(outputFilePath);
         System.out.println("Repaired file written to: " + outputFilePath);
     }
 }
