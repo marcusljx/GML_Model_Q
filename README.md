@@ -1,4 +1,4 @@
-# GML_Model_Q
+# GML_Model_Repair
 Small functions to repair/modify GML files. Uses the Dom4J library.
 
 ## How To Use
