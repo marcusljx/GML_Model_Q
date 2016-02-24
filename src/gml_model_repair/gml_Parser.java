@@ -43,7 +43,7 @@ public class gml_Parser {
 
     private void debug_print_GMLTree(Element node, int level) {
         String indent = new String(new char[level]).replace("\0", "  ");
-        String currentLine = indent + node.getName();
+        String currentLine = indent + node.getQualifiedName();
 
         // Check Kids
         List<Element> children = node.elements();
