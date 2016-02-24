@@ -27,7 +27,7 @@ public class Main {
     //===============================================
     //================ Q1 FUNCTIONS =================
     //===============================================
-    public static void mergeMajorTag_keepMinorTags(gml_Parser parsedDoc, String MajorTagName, String MinorTagName) {
+    public static void mergeMajorTag_keepMinorTags(gml_Parser parsedDoc, String MajorTagName, String MinorTagName) throws ArrayIndexOutOfBoundsException{
         // Find all Minor Tags in all non-first MajorTag Branches
         ArrayList<Element> MajorTagNodes = parsedDoc.getNodesWithName(MajorTagName);
         Element MajorNodeToKeep = MajorTagNodes.get(0);
@@ -163,7 +163,7 @@ public class Main {
     //================ Q2 FUNCTIONS =================
     //===============================================
 
-    public static void Qn3() {
+    public static void Qn3() throws ArrayIndexOutOfBoundsException {
         Element root = parser.getRoot();
         ArrayList<Element> compositeSurfaces = DOM_Algorithms.getNodesWithName(root, "gml:CompositeSurface");
 
