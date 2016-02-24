@@ -1,0 +1,9 @@
+<GMLFeatureClassList>
+  <GMLFeatureClass>
+    <Name>Building</Name>
+    <ElementPath>Building</ElementPath>
+    <DatasetSpecificInfo>
+      <FeatureCount>1</FeatureCount>
+    </DatasetSpecificInfo>
+  </GMLFeatureClass>
+</GMLFeatureClassList>
