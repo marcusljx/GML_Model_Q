@@ -124,4 +124,14 @@ public class DOM_Algorithms {
     public static void insertElementAt(Element node, Element destParent, int index) {   // inserts node among the destParent's children, at index stated
         destParent.content().add(index, node);
     }
+
+    public static void insertNewNodeAsParentOf(String newNodeName, Element targetNode) {
+        Element P = targetNode.getParent();
+        int idx = P.content().indexOf(targetNode);
+
+        targetNode.detach();
+
+        P.addElement(newNodeName)
+                .content().add(targetNode);
+    }
 }
