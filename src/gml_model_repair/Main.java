@@ -1,5 +1,6 @@
 package gml_model_repair;
 
+import com.sun.javafx.geom.Vec3d;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
@@ -163,7 +164,23 @@ public class Main {
     //===============================================
 
     public static void Qn3() {
-        parser.debug_print_GMLTree();
+        Element root = parser.getRoot();
+        ArrayList<Element> compositeSurfaces = DOM_Algorithms.getNodesWithName(root, "gml:CompositeSurface");
+
+        gml_PolygonSurface poly;
+        // Find all polygon surface members
+        for(Element CS : compositeSurfaces) {   // for each composite surface
+            for(Element surface : DOM_Algorithms.getNodesWithName(CS, "gml:surfaceMember")) {   // for each surface member in each composite surface
+                String posList = DOM_Algorithms.getNodesWithName(surface, "gml:posList").get(0).getText();
+
+                // Evaluate posList to determine surface normal to infer type
+                poly = new gml_PolygonSurface(posList);
+                String surfaceType = poly.get_surfaceType();
+
+                // Add New Tag as direct parent of surfaceMember tag
+                DOM_Algorithms.insertNewNodeAsParentOf("bldg:"+surfaceType, surface);
+            }
+        }
     }
 
     //===============================================

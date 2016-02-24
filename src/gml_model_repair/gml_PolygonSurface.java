@@ -47,11 +47,11 @@ public class gml_PolygonSurface {
         Vec3d normal = get_surfaceNormal();
         long rounded_z = Math.round(normal.z);
 
-        if (rounded_z == 1) {
+        if (rounded_z == 1) {           // z-axis average angle is pointing up (0-45deg roof)
             return "RoofSurface";
-        } else if (rounded_z == -1) {
+        } else if (rounded_z == -1) {   // z-axis angle is pointing down (0-45deg floor)
             return "GroundSurface";
-        } else {
+        } else {                        // z-axis angle is >45 deg (more like a "wall" than a horizontal surface)
             return "WallSurface";
         }
     }
